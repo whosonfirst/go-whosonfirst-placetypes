@@ -2,10 +2,16 @@ package placetypes
 
 import (
 	"encoding/json"
+	"errors"
 	"github.com/whosonfirst/go-whosonfirst-placetypes/spec"
+	"strconv"
 )
 
 type WOFPlacetypeSpec map[string]WOFPlacetype
+
+type WOFPlacetypes struct {
+	spec WOFPlacetypeSpec
+}
 
 type WOFPlacetypeName struct {
 	Lang string `json:"language"`
@@ -23,7 +29,7 @@ type WOFPlacetype struct {
 	// AltNames []WOFPlacetypeAltNames		`json:"names"`
 }
 
-func Init() (*WOFPlacetypeSpec, error) {
+func Init() (*WOFPlacetypes, error) {
 
 	places := placetypes.Spec()
 
@@ -34,7 +40,27 @@ func Init() (*WOFPlacetypeSpec, error) {
 		return nil, err
 	}
 
-	return &spec, nil
+	placetypes := WOFPlacetypes{
+		spec: spec,
+	}
+
+	return &placetypes, nil
+}
+
+func (pt *WOFPlacetypes) GetPlacetypeByName(name string) (*WOFPlacetype, error) {
+
+	for str_id, pt := range pt.spec {
+
+		if pt.Name == name {
+
+			id, _ := strconv.Atoi(str_id)
+			pt.Id = int64(id)
+
+			return &pt, nil
+		}
+	}
+
+	return nil, errors.New("Invalid placetype")
 }
 
 /*
