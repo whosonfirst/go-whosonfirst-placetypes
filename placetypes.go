@@ -2,78 +2,77 @@ package placetypes
 
 import (
 	"encoding/json"
-	"errors"
 	"github.com/whosonfirst/go-whosonfirst-placetypes/spec"
 )
 
+type WOFPlacetypeSpec map[string]WOFPlacetype
+
 type WOFPlacetypeName struct {
-	Lang string
-	Kind string
-	Name string
+	Lang string `json:"language"`
+	Kind string `json:"kind"`
+	Name string `json:"name"`
 }
 
-type WOFPlacetypeAltNames struct {
-	Lang string
-	Name string
-}
+type WOFPlacetypeAltNames map[string][]string
 
 type WOFPlacetype struct {
-	Id       int64
-	Name     string
-	Role     string
-	Parent   []string
-	AltNames []WOFPlacetypeAltNames
+	Id     int64   `json:"id"`
+	Name   string  `json:"name"`
+	Role   string  `json:"role"`
+	Parent []int64 `json:"parent"`
+	// AltNames []WOFPlacetypeAltNames		`json:"names"`
 }
 
-func Init() (interface{}, error) {
+func Init() (*WOFPlacetypeSpec, error) {
 
-	spec := placetypes.Spec()
+	places := placetypes.Spec()
 
-	var d interface{}
-	err := json.Unmarshal([]byte(spec), &d)
+	var spec WOFPlacetypeSpec
+	err := json.Unmarshal([]byte(places), &spec)
 
 	if err != nil {
 		return nil, err
 	}
 
-	return d, nil
+	return &spec, nil
 }
 
-func NewPlacetypeName(name string) (*WOFPlacetypeName, error) {
-
-	return nil, errors.New("Please write me...")
+/*
+func (sp *WOFPlacetypeSpec) Common() []string {
+	return sp.WithRole("common")
 }
 
-func NewPlacetype(placetype string) (*WOFPlacetype, error) {
-
-	return nil, errors.New("Please write me...")
+func (sp *WOFPlacetypeSpec) CommonOptional() []string {
+	return sp.WithRole("common_optional")
 }
 
-func IsValidPlacetype(placetype string) bool {
-	return false
+func (sp *WOFPlacetypeSpec) Optional() []string {
+	return sp.WithRole("optional")
 }
 
-func Common() []string {
-	return WithRole("common")
-}
-
-func CommonOptional() []string {
-	return WithRole("common_optional")
-}
-
-func Optional() []string {
-	return WithRole("optional")
-}
-
-func WithRole(role string) []string {
+func (sp *WOFPlacetypeSpec) WithRole(role string) []string {
 
 	places := make([]string, 0)
+
+	for id, placetype := range sp {
+		if placetype.Role != role {
+		   continue
+		}
+
+		places = append(places, role)
+	}
+
 	return places
 }
 
-func WithRoles(roles []string) []string {
+func (sp *WOFPlacetypeSpec) WithRoles(roles []string) []string {
 
 	places := make([]string, 0)
+
+	for _, role := range roles {
+	    places = append(places, sp.WithRole(role))
+	}
+
 	return places
 }
 
@@ -81,27 +80,4 @@ func IsValidRole(role string) bool {
 
 	return false
 }
-
-func (p WOFPlacetype) Names() []*WOFPlacetypeName {
-
-	names := make([]*WOFPlacetypeName, 0)
-	return names
-}
-
-func (p WOFPlacetype) Parents() []*WOFPlacetype {
-
-	places := make([]*WOFPlacetype, 0)
-	return places
-}
-
-func (p WOFPlacetype) Ancestors() []string {
-
-	places := make([]string, 0)
-	return places
-}
-
-func (p WOFPlacetype) AncestorsWithRoles([]string) []string {
-
-	places := make([]string, 0)
-	return places
-}
+*/
