@@ -3,7 +3,7 @@ package placetypes
 import (
 	"encoding/json"
 	"errors"
-	"github.com/whosonfirst/go-whosonfirst-placetypes/spec"
+	"github.com/whosonfirst/go-whosonfirst-placetypes/placetypes"
 	"strconv"
 )
 
