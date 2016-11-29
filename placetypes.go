@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"errors"
 	"github.com/whosonfirst/go-whosonfirst-placetypes/placetypes"
+	"log"
 	"strconv"
 )
 
@@ -40,8 +41,6 @@ func init() {
 
 func Spec() (*WOFPlacetypeSpecification, error) {
 
-	places := placetypes.Spec()
-
 	var spec WOFPlacetypeSpecification
 	err := json.Unmarshal([]byte(placetypes.Specification), &spec)
 
@@ -52,15 +51,74 @@ func Spec() (*WOFPlacetypeSpecification, error) {
 	return &spec, nil
 }
 
+func IsValidPlacetype(name string) bool {
+
+	for _, pt := range *specification {
+
+		if pt.Name == name {
+			return true
+		}
+	}
+
+	return false
+}
+
+func IsValidPlacetypeId(id int64) bool {
+
+	for str_id, _ := range *specification {
+
+		pt_id, err := strconv.Atoi(str_id)
+
+		if err != nil {
+			continue
+		}
+
+		pt_id64 := int64(pt_id)
+
+		if pt_id64 == id {
+			return true
+		}
+	}
+
+	return false
+}
+
 func GetPlacetypeByName(name string) (*WOFPlacetype, error) {
 
 	for str_id, pt := range *specification {
 
 		if pt.Name == name {
 
-			id, _ := strconv.Atoi(str_id)
-			pt.Id = int64(id)
+			pt_id, err := strconv.Atoi(str_id)
 
+			if err != nil {
+				continue
+			}
+
+			pt_id64 := int64(pt_id)
+
+			pt.Id = pt_id64
+			return &pt, nil
+		}
+	}
+
+	return nil, errors.New("Invalid placetype")
+}
+
+func GetPlacetypeById(id int64) (*WOFPlacetype, error) {
+
+	for str_id, pt := range *specification {
+
+		pt_id, err := strconv.Atoi(str_id)
+
+		if err != nil {
+			continue
+		}
+
+		pt_id64 := int64(pt_id)
+
+		if pt_id64 == id {
+			pt.Id = pt_id64
 			return &pt, nil
 		}
 	}

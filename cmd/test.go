@@ -2,11 +2,16 @@ package main
 
 import (
        "github.com/whosonfirst/go-whosonfirst-placetypes"
-       "fmt"
+       "log"
 )
 
 func main() {
 
-     s, _ := placetypes.Spec()
-     fmt.Printf("%v\n", s)
+     log.Println(placetypes.IsValidPlacetype("county"))
+     log.Println(placetypes.IsValidPlacetype("microhood"))
+     log.Println(placetypes.IsValidPlacetype("accelerator"))
+
+     id := int64(102312307)
+     log.Println(id)     	
+     log.Println(placetypes.IsValidPlacetypeId(id))          
 }
