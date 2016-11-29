@@ -19,8 +19,10 @@ deps:   self
 
 fmt:
 	go fmt *.go
+	go fmt placetypes/*.go
+
+test:
+	@GOPATH=$(GOPATH) go run cmd/test.go
 
 spec:
 	@GOPATH=$(GOPATH) go run cmd/mk-spec.go > placetypes/spec.go
-
-# @GOPATH=$(shell pwd) go get -u ""
