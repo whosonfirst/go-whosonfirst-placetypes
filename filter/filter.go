@@ -2,18 +2,18 @@ package filter
 
 import (
 	"errors"
-	"github.com/whosonfirst/go-whosonfirst-placetypes/placetypes"
+	"github.com/whosonfirst/go-whosonfirst-placetypes"
 )
 
 type PlacetypesFilter struct {
-	required map[string]*placetypes.WOFPlacetype
-	excluded map[string]*placetypes.WOFPlacetype
+	required  map[string]*placetypes.WOFPlacetype
+	forbidden map[string]*placetypes.WOFPlacetype
 }
 
 func NewPlacetypesFilter(include []string, include_roles []string, exclude []string) (*PlacetypesFilter, error) {
 
-	required := make(map[string]*placetypes.WOFPlacetypes)
-	excluded := make(map[string]*placetypes.WOFPlacetypes)
+	required := make(map[string]*placetypes.WOFPlacetype)
+	forbidden := make(map[string]*placetypes.WOFPlacetype)
 
 	for _, p := range include {
 
@@ -26,7 +26,7 @@ func NewPlacetypesFilter(include []string, include_roles []string, exclude []str
 		pt, err := placetypes.GetPlacetypeByName(p)
 
 		if err != nil {
-			return nil
+			return nil, err
 		}
 
 		required[p] = pt
@@ -42,9 +42,9 @@ func NewPlacetypesFilter(include []string, include_roles []string, exclude []str
 		}
 	*/
 
-	for _, p := range excluded {
+	for _, p := range exclude {
 
-		_, ok := excluded[p]
+		_, ok := forbidden[p]
 
 		if ok {
 			continue
@@ -53,15 +53,15 @@ func NewPlacetypesFilter(include []string, include_roles []string, exclude []str
 		pt, err := placetypes.GetPlacetypeByName(p)
 
 		if err != nil {
-			return nil
+			return nil, err
 		}
 
-		excluded[p] = pt
+		forbidden[p] = pt
 	}
 
 	f := PlacetypesFilter{
-		required: required,
-		excluded: excluded,
+		required:  required,
+		forbidden: forbidden,
 	}
 
 	return &f, nil
@@ -80,9 +80,9 @@ func (f *PlacetypesFilter) AllowFromString(pt_str string) (bool, error) {
 
 func (f *PlacetypesFilter) Allow(pt *placetypes.WOFPlacetype) (bool, error) {
 
-	if len(f.excluded) > 0 {
+	if len(f.forbidden) > 0 {
 
-		_, ok := f.excluded[pt.Name]
+		_, ok := f.forbidden[pt.Name]
 
 		if ok {
 			return false, nil
