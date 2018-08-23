@@ -125,3 +125,56 @@ func GetPlacetypeById(id int64) (*WOFPlacetype, error) {
 
 	return nil, errors.New("Invalid placetype")
 }
+
+func Ancestors(pt *WOFPlacetype) []*WOFPlacetype {
+
+	return AncestorsForRoles(pt, []string{ "common" })
+}
+
+func AncestorsForRoles(pt *WOFPlacetype, roles []string) []*WOFPlacetype {
+
+	ancestors := make([]*WOFPlacetype, 0)
+	ancestors = fetchAncestors(pt, roles, ancestors)
+
+	return ancestors
+}
+
+func fetchAncestors(pt *WOFPlacetype, roles []string, ancestors []*WOFPlacetype) []*WOFPlacetype {
+
+	for _, id := range pt.Parent {
+
+		parent, _ := GetPlacetypeById(id)
+
+		role_ok := false
+
+		for _, r := range roles {
+			
+			if r == parent.Role {
+				role_ok = true
+				break
+			}
+		}
+
+		if !role_ok {
+			continue
+		}
+
+		append_ok := true
+
+		for _, a := range ancestors {
+
+			if a.Id == parent.Id {
+				append_ok = false
+				break
+			}
+		}
+		
+		if append_ok {
+			ancestors = append(ancestors, parent)
+		}
+		
+		ancestors = fetchAncestors(parent, roles, ancestors)
+	}
+
+	return ancestors
+}
