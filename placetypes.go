@@ -170,7 +170,44 @@ func fetchAncestors(pt *WOFPlacetype, roles []string, ancestors []*WOFPlacetype)
 		}
 		
 		if append_ok {
-			ancestors = append(ancestors, parent)
+
+			has_grandparent := false
+			offset := -1
+			
+			for _, gpid := range parent.Parent {
+
+				for idx, a := range ancestors {
+
+					if a.Id == gpid {
+						offset = idx
+						has_grandparent = true
+						break
+					}
+				}
+
+				if has_grandparent {
+					break
+				}
+			}
+
+			// log.Printf("APPEND %s < %s GP: %t (%d)\n", parent.Name, pt.Name, has_grandparent, offset)
+			
+			if has_grandparent {
+
+				// log.Println("WTF 1", len(ancestors))
+				
+				tail := ancestors[offset+1:]
+				ancestors = ancestors[0:offset]
+
+				ancestors = append(ancestors, parent)
+
+				for _, a := range tail {
+					ancestors = append(ancestors, a)
+				}
+				
+			} else {
+				ancestors = append(ancestors, parent)
+			}
 		}
 		
 		ancestors = fetchAncestors(parent, roles, ancestors)
