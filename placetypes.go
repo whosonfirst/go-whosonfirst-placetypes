@@ -130,13 +130,12 @@ func Children(pt *WOFPlacetype) []*WOFPlacetype {
 
 	children := make([]*WOFPlacetype, 0)
 
-	for _, details := range *specification {
+	for other, details := range *specification {
 
 		for _, pid := range details.Parent {
 
 			if pid == pt.Id {
-
-				child_pt, _ := GetPlacetypeById(pid)
+				child_pt, _ := GetPlacetypeByName(details.Name)
 				children = append(children, child_pt)
 			}
 		}
