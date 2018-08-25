@@ -130,7 +130,7 @@ func Children(pt *WOFPlacetype) []*WOFPlacetype {
 
 	children := make([]*WOFPlacetype, 0)
 
-	for other, details := range *specification {
+	for _, details := range *specification {
 
 		for _, pid := range details.Parent {
 
@@ -200,7 +200,57 @@ func DescendantsForRoles(pt *WOFPlacetype, roles []string) []*WOFPlacetype {
 
 func fetchDescendants(pt *WOFPlacetype, roles []string, descendants []*WOFPlacetype) []*WOFPlacetype {
 
+	grandkids := make([]*WOFPlacetype, 0)
+
+	for _, kid := range Children(pt) {
+
+		descendants = appendPlacetype(kid, roles, descendants)
+
+		for _, grandkid := range Children(kid) {
+			grandkids = appendPlacetype(grandkid, roles, grandkids)
+		}
+	}
+
+	for _, k := range grandkids {
+		descendants = appendPlacetype(k, roles, descendants)
+		descendants = fetchDescendants(k, roles, descendants)
+	}
+
 	return descendants
+}
+
+func appendPlacetype(pt *WOFPlacetype, roles []string, others []*WOFPlacetype) []*WOFPlacetype {
+
+	do_append := true
+
+	for _, o := range others {
+
+		if pt.Id == o.Id {
+			do_append = false
+			break
+		}
+	}
+
+	if !do_append {
+		return others
+	}
+
+	has_role := false
+
+	for _, r := range roles {
+
+		if pt.Role == r {
+			has_role = true
+			break
+		}
+	}
+
+	if !has_role {
+		return others
+	}
+
+	others = append(others, pt)
+	return others
 }
 
 func Ancestors(pt *WOFPlacetype) []*WOFPlacetype {
