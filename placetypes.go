@@ -126,9 +126,86 @@ func GetPlacetypeById(id int64) (*WOFPlacetype, error) {
 	return nil, errors.New("Invalid placetype")
 }
 
-func Ancestors(pt *WOFPlacetype) []*WOFPlacetype {
+func Children(pt *WOFPlacetype) []*WOFPlacetype {
 
-	return AncestorsForRoles(pt, []string{ "common" })
+	children := make([]*WOFPlacetype, 0)
+
+	for _, details := range *specification {
+
+		for _, pid := range details.Parent {
+
+			if pid == pt.Id {
+
+				child_pt, _ := GetPlacetypeById(pid)
+				children = append(children, child_pt)
+			}
+		}
+	}
+
+	return sortChildren(pt, children)
+}
+
+func sortChildren(pt *WOFPlacetype, all []*WOFPlacetype) []*WOFPlacetype {
+
+	kids := make([]*WOFPlacetype, 0)
+	grandkids := make([]*WOFPlacetype, 0)
+
+	for _, other := range all {
+
+		is_grandkid := false
+
+		for _, pid := range other.Parent {
+
+			for _, p := range all {
+
+				if pid == p.Id {
+					is_grandkid = true
+					break
+				}
+			}
+
+			if is_grandkid {
+				break
+			}
+		}
+
+		if is_grandkid {
+			grandkids = append(grandkids, other)
+		} else {
+			kids = append(kids, other)
+		}
+	}
+
+	if len(grandkids) > 0 {
+		grandkids = sortChildren(pt, grandkids)
+	}
+
+	for _, k := range grandkids {
+		kids = append(kids, k)
+	}
+
+	return kids
+}
+
+func Descendants(pt *WOFPlacetype) []*WOFPlacetype {
+	return DescendantsForRoles(pt, []string{"common"})
+}
+
+func DescendantsForRoles(pt *WOFPlacetype, roles []string) []*WOFPlacetype {
+
+	descendants := make([]*WOFPlacetype, 0)
+	descendants = fetchDescendants(pt, roles, descendants)
+
+	return descendants
+}
+
+func fetchDescendants(pt *WOFPlacetype, roles []string, descendants []*WOFPlacetype) []*WOFPlacetype {
+
+	return descendants
+}
+
+func Ancestors(pt *WOFPlacetype) []*WOFPlacetype {
+	return AncestorsForRoles(pt, []string{"common"})
 }
 
 func AncestorsForRoles(pt *WOFPlacetype, roles []string) []*WOFPlacetype {
@@ -148,7 +225,7 @@ func fetchAncestors(pt *WOFPlacetype, roles []string, ancestors []*WOFPlacetype)
 		role_ok := false
 
 		for _, r := range roles {
-			
+
 			if r == parent.Role {
 				role_ok = true
 				break
@@ -168,12 +245,12 @@ func fetchAncestors(pt *WOFPlacetype, roles []string, ancestors []*WOFPlacetype)
 				break
 			}
 		}
-		
+
 		if append_ok {
 
 			has_grandparent := false
 			offset := -1
-			
+
 			for _, gpid := range parent.Parent {
 
 				for idx, a := range ancestors {
@@ -191,11 +268,11 @@ func fetchAncestors(pt *WOFPlacetype, roles []string, ancestors []*WOFPlacetype)
 			}
 
 			// log.Printf("APPEND %s < %s GP: %t (%d)\n", parent.Name, pt.Name, has_grandparent, offset)
-			
+
 			if has_grandparent {
 
 				// log.Println("WTF 1", len(ancestors))
-				
+
 				tail := ancestors[offset+1:]
 				ancestors = ancestors[0:offset]
 
@@ -204,12 +281,12 @@ func fetchAncestors(pt *WOFPlacetype, roles []string, ancestors []*WOFPlacetype)
 				for _, a := range tail {
 					ancestors = append(ancestors, a)
 				}
-				
+
 			} else {
 				ancestors = append(ancestors, parent)
 			}
 		}
-		
+
 		ancestors = fetchAncestors(parent, roles, ancestors)
 	}
 
