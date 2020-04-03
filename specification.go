@@ -1,16 +1,16 @@
 package placetypes
 
 import (
-	"strconv"
 	"encoding/json"
-	"github.com/whosonfirst/go-whosonfirst-placetypes/placetypes"
-	"sync"
 	"errors"
+	"github.com/whosonfirst/go-whosonfirst-placetypes/placetypes"
+	"strconv"
+	"sync"
 )
 
 type WOFPlacetypeSpecification struct {
 	catalog map[string]WOFPlacetype
-	mu *sync.RWMutex
+	mu      *sync.RWMutex
 }
 
 func Spec() (*WOFPlacetypeSpecification, error) {
@@ -23,20 +23,20 @@ func Spec() (*WOFPlacetypeSpecification, error) {
 	}
 
 	mu := new(sync.RWMutex)
-	
+
 	spec := &WOFPlacetypeSpecification{
 		catalog: catalog,
-		mu: mu,
+		mu:      mu,
 	}
-	
+
 	return spec, nil
 }
 
 func (spec *WOFPlacetypeSpecification) GetPlacetypeByName(name string) (*WOFPlacetype, error) {
 
-	spec.mu.RLock()
-	defer spec.mu.Unlock()
-	
+	// spec.mu.RLock()
+	// defer spec.mu.RUnlock()
+
 	for str_id, pt := range spec.catalog {
 
 		if pt.Name == name {
@@ -59,9 +59,9 @@ func (spec *WOFPlacetypeSpecification) GetPlacetypeByName(name string) (*WOFPlac
 
 func (spec *WOFPlacetypeSpecification) GetPlacetypeById(id int64) (*WOFPlacetype, error) {
 
-	spec.mu.RLock()
-	defer spec.mu.Unlock()
-	
+	// spec.mu.RLock()
+	// defer spec.mu.RUnlock()
+
 	for str_id, pt := range spec.catalog {
 
 		pt_id, err := strconv.Atoi(str_id)
@@ -85,26 +85,29 @@ func (spec *WOFPlacetypeSpecification) AppendPlacetype(pt WOFPlacetype) error {
 
 	spec.mu.Lock()
 	defer spec.mu.Unlock()
-	
-	str_id := strconv.FormatInt(pt.Id, 10)
-	
-	_, exists := spec.catalog[str_id]
 
-	if exists {
+	existing_pt, _ := spec.GetPlacetypeById(pt.Id)
+
+	if existing_pt != nil {
 		return errors.New("Placetype ID already registered")
+	}
+
+	existing_pt, _ = spec.GetPlacetypeByName(pt.Name)
+
+	if existing_pt != nil {
+		return errors.New("Placetype name already registered")
 	}
 
 	for _, pid := range pt.Parent {
 
-		str_pid := strconv.FormatInt(pid, 10)
+		_, err := spec.GetPlacetypeById(pid)
 
-		_, exists := spec.catalog[str_pid]
-
-		if !exists {
-			return errors.New("Missing parent ID")
+		if err != nil {
+			return err
 		}
 	}
 
+	str_id := strconv.FormatInt(pt.Id, 10)
 	spec.catalog[str_id] = pt
 	return nil
 }
