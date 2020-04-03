@@ -51,15 +51,29 @@ func Spec() (*WOFPlacetypeSpecification, error) {
 	return &spec, nil
 }
 
-func Placetypes() []WOFPlacetype {
+func Placetypes() ([]*WOFPlacetype, error) {
 
-	pt_list := make([]WOFPlacetype, 0)
-
-	for _, pt := range *specification {
-		pt_list = append(pt_list, pt)
+	roles := []string{
+		"common",
+		"optional",
+		"common_optional",
 	}
 
-	return pt_list
+	return PlacetypesForRoles(roles)
+}
+
+func PlacetypesForRoles(roles []string) ([]*WOFPlacetype, error) {
+
+	pl, err := GetPlacetypeByName("planet")
+
+	if err != nil {
+		return nil, err
+	}
+
+	pt_list := DescendantsForRoles(pl, roles)
+
+	pt_list = append([]*WOFPlacetype{pl}, pt_list...)
+	return pt_list, nil
 }
 
 func IsValidPlacetype(name string) bool {
