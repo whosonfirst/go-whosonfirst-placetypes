@@ -47,6 +47,10 @@ func AppendPlacetype(pt WOFPlacetype) error {
 	return specification.AppendPlacetype(pt)
 }
 
+func AppendPlacetypeSpecification(spec *WOFPlacetypeSpecification) error {
+	return specification.AppendPlacetypeSpecification(spec)
+}
+
 func Placetypes() ([]*WOFPlacetype, error) {
 
 	roles := []string{

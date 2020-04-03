@@ -85,6 +85,20 @@ func (spec *WOFPlacetypeSpecification) GetPlacetypeById(id int64) (*WOFPlacetype
 	return nil, errors.New("Invalid placetype")
 }
 
+func (spec *WOFPlacetypeSpecification) AppendPlacetypeSpecification(other_spec *WOFPlacetypeSpecification) error {
+
+	for _, pt := range other_spec.Catalog() {
+
+		err := spec.AppendPlacetype(pt)
+
+		if err != nil {
+			return err
+		}
+	}
+
+	return nil
+}
+
 func (spec *WOFPlacetypeSpecification) AppendPlacetype(pt WOFPlacetype) error {
 
 	spec.mu.Lock()
