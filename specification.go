@@ -13,10 +13,14 @@ type WOFPlacetypeSpecification struct {
 	mu      *sync.RWMutex
 }
 
-func Spec() (*WOFPlacetypeSpecification, error) {
+func DefaultWOFPlacetypeSpecification() (*WOFPlacetypeSpecification, error) {
+	return NewWOFPlacetypeSpecification([]byte(placetypes.Specification))
+}
+
+func NewWOFPlacetypeSpecification(body []byte) (*WOFPlacetypeSpecification, error) {
 
 	var catalog map[string]WOFPlacetype
-	err := json.Unmarshal([]byte(placetypes.Specification), &catalog)
+	err := json.Unmarshal(body, &catalog)
 
 	if err != nil {
 		return nil, err

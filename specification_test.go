@@ -6,7 +6,7 @@ import (
 
 func TestAppendSpecification(t *testing.T) {
 
-	spec, err := Spec()
+	spec, err := DefaultWOFPlacetypeSpecification()
 
 	if err != nil {
 		t.Fatal(err)

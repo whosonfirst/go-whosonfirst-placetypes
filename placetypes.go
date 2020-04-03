@@ -27,7 +27,7 @@ func init() {
 
 	var err error
 
-	specification, err = Spec()
+	specification, err = DefaultWOFPlacetypeSpecification()
 
 	if err != nil {
 		log.Fatal("Failed to parse specification", err)
