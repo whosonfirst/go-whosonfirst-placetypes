@@ -35,6 +35,18 @@ func init() {
 
 }
 
+func GetPlacetypeByName(name string) (*WOFPlacetype, error) {
+	return specification.GetPlacetypeByName(name)
+}
+
+func GetPlacetypeById(id int64) (*WOFPlacetype, error) {
+	return specification.GetPlacetypeById(id)
+}
+
+func AppendPlacetype(pt WOFPlacetype) error {
+	return specification.AppendPlacetype(pt)
+}
+
 func Placetypes() ([]*WOFPlacetype, error) {
 
 	roles := []string{
@@ -90,15 +102,6 @@ func IsValidPlacetypeId(id int64) bool {
 	}
 
 	return false
-}
-
-func GetPlacetypeByName(name string) (*WOFPlacetype, error) {
-	return specification.GetPlacetypeByName(name)
-}
-
-func GetPlacetypeById(id int64) (*WOFPlacetype, error) {
-
-	return specification.GetPlacetypeById(id)
 }
 
 func Children(pt *WOFPlacetype) []*WOFPlacetype {
