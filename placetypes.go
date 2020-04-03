@@ -51,6 +51,17 @@ func Spec() (*WOFPlacetypeSpecification, error) {
 	return &spec, nil
 }
 
+func Placetypes() []WOFPlacetype {
+
+	pt_list := make([]WOFPlacetype, 0)
+
+	for _, pt := range *specification {
+		pt_list = append(pt_list, pt)
+	}
+
+	return pt_list
+}
+
 func IsValidPlacetype(name string) bool {
 
 	for _, pt := range *specification {
