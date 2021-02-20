@@ -1,10 +1,8 @@
-# github.com/go-ini/ini v1.55.0
-github.com/go-ini/ini
-# github.com/hashicorp/errwrap v1.0.0
+# github.com/hashicorp/errwrap v0.0.0-20141028054710-7554cd9344ce
 github.com/hashicorp/errwrap
-# github.com/hashicorp/go-multierror v1.1.0
+# github.com/hashicorp/go-multierror v0.0.0-20171204182908-b7773ae21874
 github.com/hashicorp/go-multierror
-# github.com/whosonfirst/go-whosonfirst-cli v0.1.0
-github.com/whosonfirst/go-whosonfirst-cli/flags
+# github.com/sfomuseum/go-flags v0.7.0
+github.com/sfomuseum/go-flags/multi
 # github.com/whosonfirst/warning v0.1.1
 github.com/whosonfirst/warning

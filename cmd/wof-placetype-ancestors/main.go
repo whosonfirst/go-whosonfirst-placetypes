@@ -2,14 +2,14 @@ package main
 
 import (
 	"flag"
-	"github.com/whosonfirst/go-whosonfirst-cli/flags"
+	"github.com/sfomuseum/go-flags/multi"
 	"github.com/whosonfirst/go-whosonfirst-placetypes"
 	"log"
 )
 
 func main() {
 
-	var roles flags.MultiString
+	var roles multi.MultiString
 	flag.Var(&roles, "role", "...")
 
 	flag.Parse()
