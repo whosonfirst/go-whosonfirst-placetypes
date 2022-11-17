@@ -108,6 +108,16 @@ func IsValidPlacetypeId(id int64) bool {
 	return false
 }
 
+// Returns true is 'b' is an ancestor of 'a'.
+func IsAncestor(a *WOFPlacetype, b *WOFPlacetype) bool {
+	return false
+}
+
+// Returns true is 'b' is a descendant of 'a'.
+func IsDescendant(a *WOFPlacetype, b *WOFPlacetype) bool {
+	return false
+}
+
 func Children(pt *WOFPlacetype) []*WOFPlacetype {
 
 	children := make([]*WOFPlacetype, 0)
