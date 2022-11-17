@@ -7,8 +7,10 @@ import (
 )
 
 type WOFPlacetypeName struct {
+	// Lang is the RFC 5646 (BCP-47) language tag for the placetype name
 	Lang string `json:"language"`
 	Kind string `json:"kind"`
+	// Name is the name of the placetype (in the language defined by `Lang`)
 	Name string `json:"name"`
 }
 
@@ -113,14 +115,49 @@ func IsValidPlacetypeId(id int64) bool {
 
 // Returns true is 'b' is an ancestor of 'a'.
 func IsAncestor(a *WOFPlacetype, b *WOFPlacetype) bool {
-	return false
+
+	roles := []string{
+		"common",
+		"optional",
+		"common_optional",
+	}
+
+	is_ancestor := false
+
+	for _, ancestor := range AncestorsForRoles(a, roles) {
+
+		if ancestor.Name == b.Name {
+			is_ancestor = true
+			break
+		}
+	}
+
+	return is_ancestor
 }
 
 // Returns true is 'b' is a descendant of 'a'.
 func IsDescendant(a *WOFPlacetype, b *WOFPlacetype) bool {
-	return false
+
+	roles := []string{
+		"common",
+		"optional",
+		"common_optional",
+	}
+
+	is_descendant := false
+
+	for _, descendant := range DescendantsForRoles(a, roles) {
+
+		if descendant.Name == b.Name {
+			is_descendant = true
+			break
+		}
+	}
+
+	return is_descendant
 }
 
+// Children returns the immediate child placetype of 'pt'.
 func Children(pt *WOFPlacetype) []*WOFPlacetype {
 
 	children := make([]*WOFPlacetype, 0)
@@ -181,10 +218,12 @@ func sortChildren(pt *WOFPlacetype, all []*WOFPlacetype) []*WOFPlacetype {
 	return kids
 }
 
+// Descendants returns the descendants of role "common" for 'pt'.
 func Descendants(pt *WOFPlacetype) []*WOFPlacetype {
 	return DescendantsForRoles(pt, []string{"common"})
 }
 
+// DescendantsForRoles returns the descendants matching any role in 'roles' for 'pt'.
 func DescendantsForRoles(pt *WOFPlacetype, roles []string) []*WOFPlacetype {
 
 	descendants := make([]*WOFPlacetype, 0)
@@ -248,10 +287,12 @@ func appendPlacetype(pt *WOFPlacetype, roles []string, others []*WOFPlacetype) [
 	return others
 }
 
+// Ancestors returns the ancestors of role "common" for 'pt'.
 func Ancestors(pt *WOFPlacetype) []*WOFPlacetype {
 	return AncestorsForRoles(pt, []string{"common"})
 }
 
+// AncestorsForRoles returns the ancestors matching any role in 'roles' for 'pt'.
 func AncestorsForRoles(pt *WOFPlacetype, roles []string) []*WOFPlacetype {
 
 	ancestors := make([]*WOFPlacetype, 0)
