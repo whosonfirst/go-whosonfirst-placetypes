@@ -1,6 +1,7 @@
 package placetypes
 
 import (
+	"fmt"
 	"log"
 	"strconv"
 )
@@ -25,14 +26,13 @@ var specification *WOFPlacetypeSpecification
 
 func init() {
 
-	var err error
-
-	specification, err = DefaultWOFPlacetypeSpecification()
+	s, err := DefaultWOFPlacetypeSpecification()
 
 	if err != nil {
-		log.Fatal("Failed to parse specification", err)
+		log.Fatal("Failed to load default WOF specification", err)
 	}
 
+	specification = s
 }
 
 func GetPlacetypeByName(name string) (*WOFPlacetype, error) {
@@ -51,6 +51,7 @@ func AppendPlacetypeSpecification(spec *WOFPlacetypeSpecification) error {
 	return specification.AppendPlacetypeSpecification(spec)
 }
 
+// Placetypes returns all the known placetypes for the 'common', 'optional' and 'common_optional' roles.
 func Placetypes() ([]*WOFPlacetype, error) {
 
 	roles := []string{
@@ -67,7 +68,7 @@ func PlacetypesForRoles(roles []string) ([]*WOFPlacetype, error) {
 	pl, err := GetPlacetypeByName("planet")
 
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("Failed to load 'planet' placetype, %w", err)
 	}
 
 	pt_list := DescendantsForRoles(pl, roles)
@@ -76,6 +77,7 @@ func PlacetypesForRoles(roles []string) ([]*WOFPlacetype, error) {
 	return pt_list, nil
 }
 
+// IsValidPlacetypeId returns a boolean value indicating whether 'name' is a known and valid placetype name.
 func IsValidPlacetype(name string) bool {
 
 	for _, pt := range specification.Catalog() {
@@ -88,6 +90,7 @@ func IsValidPlacetype(name string) bool {
 	return false
 }
 
+// IsValidPlacetypeId returns a boolean value indicating whether 'id' is a known and valid placetype ID.
 func IsValidPlacetypeId(id int64) bool {
 
 	for str_id, _ := range specification.Catalog() {
