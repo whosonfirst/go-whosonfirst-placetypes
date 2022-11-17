@@ -1,7 +1,7 @@
 package filter
 
 import (
-	"errors"
+	"fmt"
 	"github.com/whosonfirst/go-whosonfirst-placetypes"
 	"github.com/whosonfirst/warning"
 )
@@ -27,21 +27,15 @@ func NewPlacetypesFilter(include []string, include_roles []string, exclude []str
 		pt, err := placetypes.GetPlacetypeByName(p)
 
 		if err != nil {
-			return nil, err
+			return nil, fmt.Errorf("Failed to get placetype by name for inclusion %s, %w", p, err)
 		}
 
 		required[p] = pt
 	}
 
 	if len(include_roles) > 0 {
-		return nil, errors.New("included roles are not supported yet")
+		return nil, fmt.Errorf("included roles are not supported yet")
 	}
-
-	/*
-		for _, p := range include_roles {
-
-		}
-	*/
 
 	for _, p := range exclude {
 
@@ -54,7 +48,7 @@ func NewPlacetypesFilter(include []string, include_roles []string, exclude []str
 		pt, err := placetypes.GetPlacetypeByName(p)
 
 		if err != nil {
-			return nil, err
+			return nil, fmt.Errorf("Failed to get placetype by name for exclusion %s, %w", p, err)
 		}
 
 		forbidden[p] = pt
@@ -73,7 +67,8 @@ func (f *PlacetypesFilter) AllowFromString(pt_str string) (bool, error) {
 	pt, err := placetypes.GetPlacetypeByName(pt_str)
 
 	if err != nil {
-		return true, warning.New(err.Error())
+		e := fmt.Errorf("Failed to get placetype by name %s, %w", pt_str, err)
+		return true, warning.New(e.Error())
 	}
 
 	return f.Allow(pt)

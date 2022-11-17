@@ -1,8 +1,12 @@
 # github.com/hashicorp/errwrap v0.0.0-20141028054710-7554cd9344ce
+## explicit
 github.com/hashicorp/errwrap
 # github.com/hashicorp/go-multierror v0.0.0-20171204182908-b7773ae21874
+## explicit
 github.com/hashicorp/go-multierror
-# github.com/sfomuseum/go-flags v0.7.0
+# github.com/sfomuseum/go-flags v0.10.0
+## explicit; go 1.16
 github.com/sfomuseum/go-flags/multi
 # github.com/whosonfirst/warning v0.1.1
+## explicit; go 1.12
 github.com/whosonfirst/warning
