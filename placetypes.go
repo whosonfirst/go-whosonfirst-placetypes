@@ -4,8 +4,8 @@ import (
 	"fmt"
 	"log"
 	"strconv"
-	"sync"
 	"strings"
+	"sync"
 )
 
 type WOFPlacetypeName struct {
@@ -55,7 +55,7 @@ func init() {
 		for i := 0; i < count_roles; i++ {
 
 			pt_roles := roles[0:i]
-			
+
 			for _, pt := range specification.catalog {
 				go Children(&pt)
 				go DescendantsForRoles(&pt, pt_roles)
@@ -63,6 +63,7 @@ func init() {
 			}
 		}
 	}()
+
 }
 
 func GetPlacetypeByName(name string) (*WOFPlacetype, error) {
@@ -158,7 +159,7 @@ func IsAncestor(a *WOFPlacetype, b *WOFPlacetype) bool {
 	if ok {
 		return v.(bool)
 	}
-	
+
 	is_ancestor := false
 
 	for _, ancestor := range AncestorsForRoles(a, roles) {
@@ -190,7 +191,7 @@ func IsDescendant(a *WOFPlacetype, b *WOFPlacetype) bool {
 	if ok {
 		return v.(bool)
 	}
-	
+
 	is_descendant := false
 
 	for _, descendant := range DescendantsForRoles(a, roles) {
@@ -215,7 +216,7 @@ func Children(pt *WOFPlacetype) []*WOFPlacetype {
 	if ok {
 		return v.([]*WOFPlacetype)
 	}
-	
+
 	children := make([]*WOFPlacetype, 0)
 
 	for _, details := range specification.Catalog() {
@@ -230,7 +231,7 @@ func Children(pt *WOFPlacetype) []*WOFPlacetype {
 	}
 
 	sorted := sortChildren(pt, children)
-	
+
 	relationships.Store(key, sorted)
 	return sorted
 }
@@ -293,7 +294,7 @@ func DescendantsForRoles(pt *WOFPlacetype, roles []string) []*WOFPlacetype {
 	if ok {
 		return v.([]*WOFPlacetype)
 	}
-	
+
 	descendants := make([]*WOFPlacetype, 0)
 	descendants = fetchDescendants(pt, roles, descendants)
 
@@ -372,11 +373,11 @@ func AncestorsForRoles(pt *WOFPlacetype, roles []string) []*WOFPlacetype {
 	if ok {
 		return v.([]*WOFPlacetype)
 	}
-	
+
 	ancestors := make([]*WOFPlacetype, 0)
 	ancestors = fetchAncestors(pt, roles, ancestors)
 
-	relationships.Store(key, ancestors)	
+	relationships.Store(key, ancestors)
 	return ancestors
 }
 
