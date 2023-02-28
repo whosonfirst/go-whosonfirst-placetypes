@@ -18,6 +18,10 @@ type WOFPlacetypeName struct {
 
 type WOFPlacetypeAltNames map[string][]string
 
+// Type WOFPlacetype defines an individual placetype encoded in a `WOFPlacetypeSpecification`
+// instance. The choice of naming this "WOFPlacetype" is unfortunate because since it is easily
+// confused with the actual JSON definition files for placetypes. However, we're stuck with it
+// for now in order to preserve backwards compatibility. Womp womp...
 type WOFPlacetype struct {
 	Id     int64   `json:"id"`
 	Name   string  `json:"name"`

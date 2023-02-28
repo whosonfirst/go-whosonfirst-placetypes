@@ -9,6 +9,7 @@ import (
 	"log"
 	"os"
 	"path/filepath"
+	"strconv"
 	"sync"
 
 	"github.com/whosonfirst/go-whosonfirst-iterate/v2/iterator"
@@ -27,7 +28,7 @@ func main() {
 	mu := new(sync.RWMutex)
 	parent_map := new(sync.Map)
 
-	wof_placetypes := make([]*placetypes.WOFPlacetype, 0)
+	wof_placetypes := make([]*placetypes.WOFPlacetypeDefinition, 0)
 
 	iter_cb := func(ctx context.Context, path string, r io.ReadSeeker, args ...interface{}) error {
 
@@ -35,7 +36,7 @@ func main() {
 			return nil
 		}
 
-		var pt *placetypes.WOFPlacetype
+		var pt *placetypes.WOFPlacetypeDefinition
 
 		dec := json.NewDecoder(r)
 		err := dec.Decode(&pt)
@@ -69,19 +70,13 @@ func main() {
 
 	// START OF... not sure...
 
-	type spec_pt struct {
-		Role   string              `json:"role"`
-		Name   string              `json:"name"`
-		Parent []int64             `json:"parent"`
-		Names  map[string][]string `json:"names"`
-	}
-
-	spec := make(map[int64]spec_pt)
+	spec := make(map[string]*placetypes.WOFPlacetype)
 
 	for _, pt := range wof_placetypes {
 
-		id := pt.Id
-
+		// Legacy stuff, oh well...
+		str_id := strconv.FormatInt(pt.Id, 10)
+		
 		parents := pt.Parent
 		parent_ids := make([]int64, len(parents))
 
@@ -96,7 +91,8 @@ func main() {
 			parent_ids[idx] = p_id.(int64)
 		}
 
-		spec[id] = spec_pt{
+		spec[str_id] = &placetypes.WOFPlacetype{
+			Id: pt.Id,
 			Role:   pt.Role,
 			Name:   pt.Name,
 			Parent: parent_ids,
