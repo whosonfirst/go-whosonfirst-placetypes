@@ -446,7 +446,7 @@ func (spec *WOFPlacetypeSpecification) DescendantsForRoles(pt *WOFPlacetype, rol
 	return descendants
 }
 
-func (spec *WOFPlacetypeSpecification) GraphPlacetypes() (any, error) {
+func (spec *WOFPlacetypeSpecification) GraphPlacetypes() (graph.Graph, error) {
 
 	placetypeHash := func(pt *WOFPlacetype) string {
 		return pt.Name

@@ -1,7 +1,10 @@
 package placetypes
 
 import (
+	"fmt"
 	"testing"
+
+	"github.com/dominikbraun/graph"	
 )
 
 func TestGraphPlacetypes(t *testing.T) {
@@ -12,11 +15,19 @@ func TestGraphPlacetypes(t *testing.T) {
 		t.Fatalf("Failed to load default WOF placetype specification, %v", err)
 	}
 
-	_, err = spec.GraphPlacetypes()
+	gr, err := spec.GraphPlacetypes()
 
 	if err != nil {
 		t.Fatalf("Failed to graph placetypes, %v", err)
 	}
+
+	ordered, err := graph.TopologicalSort(gr)
+
+	if err != nil {
+		t.Fatalf("Failed to sort graph, %v", err)
+	}
+
+	fmt.Println(ordered)
 }
 
 func TestAppendSpecification(t *testing.T) {
