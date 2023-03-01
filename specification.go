@@ -186,6 +186,15 @@ func (spec *WOFPlacetypeSpecification) GetPlacetypeById(id int64) (*WOFPlacetype
 
 func (spec *WOFPlacetypeSpecification) AppendPlacetypeSpecification(other_spec *WOFPlacetypeSpecification) error {
 
+	if spec.isIndexingRelationships(){
+		
+		<- spec.indexing_channel
+		
+		go func(){
+			spec.indexing_channel <- true
+		}()
+	}
+	
 	for _, pt := range other_spec.Catalog() {
 
 		err := spec.AppendPlacetype(pt)
@@ -196,7 +205,9 @@ func (spec *WOFPlacetypeSpecification) AppendPlacetypeSpecification(other_spec *
 	}
 
 	// Note the way we are not doing this in a Go routine; we want to block
-	// until things are done
+	// until things the relationships between the two specifications have been
+	// updated.
+	
 	spec.indexRelationships()
 	
 	return nil
@@ -277,9 +288,9 @@ func (spec *WOFPlacetypeSpecification) IsValidPlacetypeId(id int64) bool {
 func (spec *WOFPlacetypeSpecification) IsAncestor(a *WOFPlacetype, b *WOFPlacetype) bool {
 
 	roles := []string{
-		"common",
-		"optional",
-		"common_optional",
+		COMMON_ROLE,
+		OPTIONAL_ROLE,
+		COMMON_OPTIONAL_ROLE,
 	}
 
 	str_roles := strings.Join(roles, "-")
@@ -312,9 +323,9 @@ func (spec *WOFPlacetypeSpecification) IsAncestor(a *WOFPlacetype, b *WOFPlacety
 func (spec *WOFPlacetypeSpecification) IsDescendant(a *WOFPlacetype, b *WOFPlacetype) bool {
 
 	roles := []string{
-		"common",
-		"optional",
-		"common_optional",
+		COMMON_ROLE,
+		OPTIONAL_ROLE,
+		COMMON_OPTIONAL_ROLE,
 	}
 
 	str_roles := strings.Join(roles, "-")
