@@ -16,11 +16,11 @@ import (
 var FS embed.FS
 
 type WOFPlacetypeSpecification struct {
-	catalog       map[string]WOFPlacetype
-	mu            *sync.RWMutex
-	relationships *sync.Map
+	catalog                map[string]WOFPlacetype
+	mu                     *sync.RWMutex
+	relationships          *sync.Map
 	indexing_relationships int32
-	indexing_channel chan bool
+	indexing_channel       chan bool
 }
 
 func DefaultWOFPlacetypeSpecification() (*WOFPlacetypeSpecification, error) {
@@ -40,7 +40,7 @@ func DefaultWOFPlacetypeSpecification() (*WOFPlacetypeSpecification, error) {
 	}
 
 	go spec.indexRelationships()
-	
+
 	return spec, nil
 }
 
@@ -60,15 +60,15 @@ func NewWOFPlacetypeSpecificationWithReader(r io.Reader) (*WOFPlacetypeSpecifica
 	relationships := new(sync.Map)
 
 	indexing_channel := make(chan bool)
-	
-	go func(){
+
+	go func() {
 		indexing_channel <- true
 	}()
-	
+
 	spec := &WOFPlacetypeSpecification{
-		catalog:       catalog,
-		mu:            mu,
-		relationships: relationships,
+		catalog:          catalog,
+		mu:               mu,
+		relationships:    relationships,
 		indexing_channel: indexing_channel,
 	}
 
@@ -92,37 +92,37 @@ func (spec *WOFPlacetypeSpecification) isIndexingRelationships() bool {
 
 func (spec *WOFPlacetypeSpecification) indexRelationships() {
 
-	<- spec.indexing_channel
-	
+	<-spec.indexing_channel
+
 	atomic.AddInt32(&spec.indexing_relationships, 1)
-	
-	defer func(){
+
+	defer func() {
 		atomic.AddInt32(&spec.indexing_relationships, -1)
 		spec.indexing_channel <- true
 	}()
-	
+
 	spec.relationships = new(sync.Map)
-		
+
 	roles := []string{
 		COMMON_ROLE,
 		OPTIONAL_ROLE,
 		COMMON_OPTIONAL_ROLE,
 		CUSTOM_ROLE,
 	}
-	
+
 	count_roles := len(roles)
-	
+
 	for i := 0; i < count_roles; i++ {
-		
+
 		pt_roles := roles[0:i]
-		
+
 		for _, pt := range spec.catalog {
 			go spec.Children(&pt)
 			go spec.DescendantsForRoles(&pt, pt_roles)
 			go spec.AncestorsForRoles(&pt, pt_roles)
 		}
 	}
-	
+
 }
 
 func (spec *WOFPlacetypeSpecification) PlacetypesForRoles(roles []string) ([]*WOFPlacetype, error) {
@@ -187,15 +187,15 @@ func (spec *WOFPlacetypeSpecification) GetPlacetypeById(id int64) (*WOFPlacetype
 
 func (spec *WOFPlacetypeSpecification) AppendPlacetypeSpecification(other_spec *WOFPlacetypeSpecification) error {
 
-	if spec.isIndexingRelationships(){
-		
-		<- spec.indexing_channel
-		
-		go func(){
+	if spec.isIndexingRelationships() {
+
+		<-spec.indexing_channel
+
+		go func() {
 			spec.indexing_channel <- true
 		}()
 	}
-	
+
 	for _, pt := range other_spec.Catalog() {
 
 		err := spec.AppendPlacetype(pt)
@@ -208,9 +208,9 @@ func (spec *WOFPlacetypeSpecification) AppendPlacetypeSpecification(other_spec *
 	// Note the way we are not doing this in a Go routine; we want to block
 	// until things the relationships between the two specifications have been
 	// updated.
-	
+
 	spec.indexRelationships()
-	
+
 	return nil
 }
 
@@ -298,15 +298,15 @@ func (spec *WOFPlacetypeSpecification) IsAncestor(a *WOFPlacetype, b *WOFPlacety
 	str_roles := strings.Join(roles, "-")
 	key := fmt.Sprintf("%d_%d_%s_is_ancestor", a.Id, b.Id, str_roles)
 
-	if !spec.isIndexingRelationships(){
-		
+	if !spec.isIndexingRelationships() {
+
 		v, ok := spec.relationships.Load(key)
-		
+
 		if ok {
 			return v.(bool)
 		}
 	}
-	
+
 	is_ancestor := false
 
 	for _, ancestor := range spec.AncestorsForRoles(a, roles) {
@@ -336,13 +336,13 @@ func (spec *WOFPlacetypeSpecification) IsDescendant(a *WOFPlacetype, b *WOFPlace
 
 	v, ok := spec.relationships.Load(key)
 
-	if !spec.isIndexingRelationships(){
-		
+	if !spec.isIndexingRelationships() {
+
 		if ok {
 			return v.(bool)
 		}
 	}
-	
+
 	is_descendant := false
 
 	for _, descendant := range spec.DescendantsForRoles(a, roles) {
@@ -362,15 +362,15 @@ func (spec *WOFPlacetypeSpecification) Children(pt *WOFPlacetype) []*WOFPlacetyp
 
 	key := fmt.Sprintf("%d_children", pt.Id)
 
-	if !spec.isIndexingRelationships(){
-		
+	if !spec.isIndexingRelationships() {
+
 		v, ok := spec.relationships.Load(key)
-		
+
 		if ok {
 			return v.([]*WOFPlacetype)
 		}
 	}
-	
+
 	children := make([]*WOFPlacetype, 0)
 
 	for _, details := range spec.catalog {
@@ -401,15 +401,15 @@ func (spec *WOFPlacetypeSpecification) AncestorsForRoles(pt *WOFPlacetype, roles
 	str_roles := strings.Join(roles, "-")
 	key := fmt.Sprintf("%d_ancestors_%s", pt.Id, str_roles)
 
-	if !spec.isIndexingRelationships(){
-		
+	if !spec.isIndexingRelationships() {
+
 		v, ok := spec.relationships.Load(key)
-		
+
 		if ok {
 			return v.([]*WOFPlacetype)
 		}
 	}
-	
+
 	ancestors := make([]*WOFPlacetype, 0)
 	ancestors = spec.fetchAncestors(pt, roles, ancestors)
 
@@ -428,15 +428,15 @@ func (spec *WOFPlacetypeSpecification) DescendantsForRoles(pt *WOFPlacetype, rol
 	str_roles := strings.Join(roles, "-")
 	key := fmt.Sprintf("%d_descendants_%s", pt.Id, str_roles)
 
-	if !spec.isIndexingRelationships(){
-		
+	if !spec.isIndexingRelationships() {
+
 		v, ok := spec.relationships.Load(key)
-		
+
 		if ok {
 			return v.([]*WOFPlacetype)
 		}
 	}
-	
+
 	descendants := make([]*WOFPlacetype, 0)
 	descendants = spec.fetchDescendants(pt, roles, descendants)
 
@@ -462,6 +462,7 @@ func (spec *WOFPlacetypeSpecification) fetchDescendants(pt *WOFPlacetype, roles 
 		descendants = spec.fetchDescendants(k, roles, descendants)
 	}
 
+	// fmt.Println(pt, descendants)
 	return descendants
 }
 

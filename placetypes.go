@@ -63,9 +63,10 @@ func AppendPlacetypeSpecification(spec *WOFPlacetypeSpecification) error {
 func Placetypes() ([]*WOFPlacetype, error) {
 
 	roles := []string{
-		"common",
-		"optional",
-		"common_optional",
+		COMMON_ROLE,
+		OPTIONAL_ROLE,
+		COMMON_OPTIONAL_ROLE,
+		CUSTOM_ROLE,
 	}
 
 	return PlacetypesForRoles(roles)
