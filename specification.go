@@ -10,6 +10,8 @@ import (
 	"strings"
 	"sync"
 	"sync/atomic"
+
+	"github.com/dominikbraun/graph"
 )
 
 //go:embed placetypes.json
@@ -442,6 +444,62 @@ func (spec *WOFPlacetypeSpecification) DescendantsForRoles(pt *WOFPlacetype, rol
 
 	spec.relationships.Store(key, descendants)
 	return descendants
+}
+
+func (spec *WOFPlacetypeSpecification) GraphPlacetypes() (any, error) {
+
+	placetypeHash := func(pt *WOFPlacetype) string {
+		return pt.Name
+	}
+
+	gr := graph.New(placetypeHash, graph.Directed(), graph.Acyclic(), graph.PreventCycles())
+
+	lookup := new(sync.Map)
+
+	for str_id, pt := range spec.catalog {
+
+		err := gr.AddVertex(&pt)
+
+		if err != nil {
+			return nil, fmt.Errorf("Failed to add vertex for %v, %w", pt, err)
+		}
+
+		p_id := pt.Id
+
+		if p_id == 0 {
+
+			p_id, err = strconv.ParseInt(str_id, 10, 64)
+
+			if err != nil {
+				return nil, fmt.Errorf("Failed to parse string ID for %v (%s), %w", pt, str_id, err)
+			}
+		}
+
+		lookup.Store(p_id, pt)
+	}
+
+	for _, pt := range spec.catalog {
+
+		for _, p_id := range pt.Parent {
+
+			v, exists := lookup.Load(p_id)
+
+			if !exists {
+				return nil, fmt.Errorf("Failed to load parent ID (%d) for %v", p_id, pt)
+			}
+
+			p_pt := v.(WOFPlacetype)
+
+			err := gr.AddEdge(p_pt.Name, pt.Name)
+
+			if err != nil {
+				return nil, fmt.Errorf("Failed to add edge between %v and %v, %w", p_pt, pt, err)
+			}
+		}
+
+	}
+
+	return gr, nil
 }
 
 func (spec *WOFPlacetypeSpecification) fetchDescendants(pt *WOFPlacetype, roles []string, descendants []*WOFPlacetype) []*WOFPlacetype {

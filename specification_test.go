@@ -4,6 +4,21 @@ import (
 	"testing"
 )
 
+func TestGraphPlacetypes(t *testing.T) {
+
+	spec, err := DefaultWOFPlacetypeSpecification()
+
+	if err != nil {
+		t.Fatalf("Failed to load default WOF placetype specification, %v", err)
+	}
+
+	_, err = spec.GraphPlacetypes()
+
+	if err != nil {
+		t.Fatalf("Failed to graph placetypes, %v", err)
+	}
+}
+
 func TestAppendSpecification(t *testing.T) {
 
 	spec, err := DefaultWOFPlacetypeSpecification()

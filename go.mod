@@ -3,6 +3,7 @@ module github.com/whosonfirst/go-whosonfirst-placetypes
 go 1.18
 
 require (
+	github.com/dominikbraun/graph v0.16.0
 	github.com/sfomuseum/go-flags v0.10.0
 	github.com/whosonfirst/go-whosonfirst-iterate/v2 v2.3.1
 	github.com/whosonfirst/warning v0.1.1

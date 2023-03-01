@@ -2,6 +2,8 @@ github.com/aaronland/go-json-query v0.1.3 h1:wBqGF4d+Qy1+/YFqiFEKL7ja4iaaZi9E/CW
 github.com/aaronland/go-json-query v0.1.3/go.mod h1:+T7tN35K0RtLt92MlNM+N2sr6pxsQMJc6Fd4PsKaVtw=
 github.com/aaronland/go-roster v1.0.0 h1:FRDGrTqsYySKjWnAhbBGXyeGlI/o5/t9FZYCbUmyQtI=
 github.com/aaronland/go-roster v1.0.0/go.mod h1:KIsYZgrJlAsyb9LsXSCvlqvbcCBVjCSqcQiZx42i9ro=
+github.com/dominikbraun/graph v0.16.0 h1:M8B6g/uVYHQ2TG+AdbRtyXg7/ASHZCihzzkttFUHidA=
+github.com/dominikbraun/graph v0.16.0/go.mod h1:yOjYyogZLY1LSG9E33JWZJiq5k83Qy2C6POAuiViluc=
 github.com/hashicorp/errwrap v0.0.0-20141028054710-7554cd9344ce h1:prjrVgOk2Yg6w+PflHoszQNLTUh4kaByUcEWM/9uin4=
 github.com/hashicorp/errwrap v0.0.0-20141028054710-7554cd9344ce/go.mod h1:YH+1FKiLXxHSkmPseP+kNlulaMuP3n2brvKWEqk/Jc4=
 github.com/hashicorp/go-multierror v0.0.0-20171204182908-b7773ae21874 h1:em+tTnzgU7N22woTBMcSJAOW7tRHAkK597W+MD/CpK8=
