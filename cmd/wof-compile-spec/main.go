@@ -50,8 +50,6 @@ func main() {
 		mu.Lock()
 		defer mu.Unlock()
 
-		log.Printf("Add %s (%d)\n", path, pt.Id)
-
 		wof_placetypes = append(wof_placetypes, pt)
 		return nil
 	}
@@ -76,7 +74,7 @@ func main() {
 
 		// Legacy stuff, oh well...
 		str_id := strconv.FormatInt(pt.Id, 10)
-		
+
 		parents := pt.Parent
 		parent_ids := make([]int64, len(parents))
 
@@ -92,7 +90,7 @@ func main() {
 		}
 
 		spec[str_id] = &placetypes.WOFPlacetype{
-			Id: pt.Id,
+			Id:     pt.Id,
 			Role:   pt.Role,
 			Name:   pt.Name,
 			Parent: parent_ids,
