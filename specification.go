@@ -107,6 +107,7 @@ func (spec *WOFPlacetypeSpecification) indexRelationships() {
 		COMMON_ROLE,
 		OPTIONAL_ROLE,
 		COMMON_OPTIONAL_ROLE,
+		CUSTOM_ROLE,
 	}
 	
 	count_roles := len(roles)
@@ -115,7 +116,7 @@ func (spec *WOFPlacetypeSpecification) indexRelationships() {
 		
 		pt_roles := roles[0:i]
 		
-		for _, pt := range spec.Catalog() {
+		for _, pt := range spec.catalog {
 			go spec.Children(&pt)
 			go spec.DescendantsForRoles(&pt, pt_roles)
 			go spec.AncestorsForRoles(&pt, pt_roles)
@@ -291,6 +292,7 @@ func (spec *WOFPlacetypeSpecification) IsAncestor(a *WOFPlacetype, b *WOFPlacety
 		COMMON_ROLE,
 		OPTIONAL_ROLE,
 		COMMON_OPTIONAL_ROLE,
+		CUSTOM_ROLE,
 	}
 
 	str_roles := strings.Join(roles, "-")
@@ -326,6 +328,7 @@ func (spec *WOFPlacetypeSpecification) IsDescendant(a *WOFPlacetype, b *WOFPlace
 		COMMON_ROLE,
 		OPTIONAL_ROLE,
 		COMMON_OPTIONAL_ROLE,
+		CUSTOM_ROLE,
 	}
 
 	str_roles := strings.Join(roles, "-")
