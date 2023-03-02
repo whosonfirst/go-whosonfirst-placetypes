@@ -444,10 +444,10 @@ func (spec *WOFPlacetypeSpecification) DescendantsForRoles(pt *WOFPlacetype, rol
 
 	if !spec.isIndexingRelationships() {
 
-		_, ok := spec.relationships.Load(key)
+		v, ok := spec.relationships.Load(key)
 
 		if ok {
-			// return v.([]*WOFPlacetype)
+			return v.([]*WOFPlacetype)
 		}
 	}
 
