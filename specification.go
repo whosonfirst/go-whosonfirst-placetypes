@@ -6,6 +6,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
+	_ "log"
 	"strconv"
 	"strings"
 	"sync"
@@ -482,7 +483,27 @@ func (spec *WOFPlacetypeSpecification) GraphPlacetypes() (graph.Graph[string, *W
 
 	for str_id, pt := range spec.catalog {
 
-		err := gr.AddVertex(&pt)
+		var color string
+
+		switch pt.Role {
+		case COMMON_ROLE:
+			color = "blue"
+		case COMMON_OPTIONAL_ROLE:
+			color = "green"
+		case OPTIONAL_ROLE:
+			color = "yellow"
+		case CUSTOM_ROLE:
+			color = "orange"
+		default:
+			color = "black"
+		}
+
+		attrs := []func(*graph.VertexProperties){
+			graph.VertexAttribute("shape", "box"),
+			graph.VertexAttribute("color", color),
+		}
+
+		err := gr.AddVertex(&pt, attrs...)
 
 		if err != nil {
 			return nil, fmt.Errorf("Failed to add vertex for %v, %w", pt, err)
