@@ -128,12 +128,21 @@ func (spec *WOFPlacetypeSpecification) indexRelationships() {
 func (spec *WOFPlacetypeSpecification) Placetypes() ([]*WOFPlacetype, error) {
 
 	roles := AllRoles()
-
 	return spec.PlacetypesForRoles(roles)
 }
 
 // Placetypes returns all the known placetypes which are descendants of "planet" whose role match any of those defined in 'roles'.
 func (spec *WOFPlacetypeSpecification) PlacetypesForRoles(roles []string) ([]*WOFPlacetype, error) {
+
+	/*
+
+		Note: In order for this to work as expected with external placetype specifications (non "core" placetypes
+		like those in sfomuseum/sfomuseum-placetypes for example) the root-level placetype (the functional equivalent
+		of "planet") needs to list as one its parent elements either: planet or any of the immediate children of the
+		planet placetype. This is not ideal which is to say: That shouldn't be necessary, but today it is...
+		(20230302/thisisaaronland)
+
+	*/
 
 	pl, err := spec.GetPlacetypeByName("planet")
 
@@ -241,6 +250,11 @@ func (spec *WOFPlacetypeSpecification) AppendPlacetype(pt WOFPlacetype) error {
 	}
 
 	/*
+
+		We used to do this but it makes merging external specifications problematic and I
+		no longer even remember why it seemed necessary in the first place...
+		(20230302/thisisaaronland)
+
 		for _, pid := range pt.Parent {
 
 			_, err := spec.GetPlacetypeById(pid)
@@ -430,10 +444,10 @@ func (spec *WOFPlacetypeSpecification) DescendantsForRoles(pt *WOFPlacetype, rol
 
 	if !spec.isIndexingRelationships() {
 
-		v, ok := spec.relationships.Load(key)
+		_, ok := spec.relationships.Load(key)
 
 		if ok {
-			return v.([]*WOFPlacetype)
+			// return v.([]*WOFPlacetype)
 		}
 	}
 
@@ -552,19 +566,19 @@ func (spec *WOFPlacetypeSpecification) GraphPlacetypes() (graph.Graph[string, *W
 
 			/*
 
-			 TO DO: draw concordances for a given placeptye. This is block on the absence of any
-			 concordance related properties on the WOFPlacetype struct.For example, sfomuseum-placetypes/placetypes/airport.json:
+				 TO DO: draw concordances for a given placeptye. This is block on the absence of any
+				 concordance related properties on the WOFPlacetype struct.For example, sfomuseum-placetypes/placetypes/airport.json:
 
-			{
-			    "sfomuseum:role": "custom",
-			    "sfomuseum:name": "airport",
-			    "sfomuseum:label": "Airport",
-			    "sfomuseum:parent": [ "locality", "localadmin" ],
-			    "sfomuseum:concordances": {
-			        "wof:placetype": "campus"
-			    },
-			    "sfomuseum:id": 1175747225
-			}
+				{
+				    "sfomuseum:role": "custom",
+				    "sfomuseum:name": "airport",
+				    "sfomuseum:label": "Airport",
+				    "sfomuseum:parent": [ "locality", "localadmin" ],
+				    "sfomuseum:concordances": {
+				        "wof:placetype": "campus"
+				    },
+				    "sfomuseum:id": 1175747225
+				}
 
 			*/
 		}
@@ -592,7 +606,6 @@ func (spec *WOFPlacetypeSpecification) fetchDescendants(pt *WOFPlacetype, roles 
 		descendants = spec.fetchDescendants(k, roles, descendants)
 	}
 
-	// fmt.Println(pt, descendants)
 	return descendants
 }
 
