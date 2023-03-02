@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"testing"
 
-	"github.com/dominikbraun/graph"	
+	"github.com/dominikbraun/graph"
 )
 
 func TestGraphPlacetypes(t *testing.T) {
@@ -24,7 +24,7 @@ func TestGraphPlacetypes(t *testing.T) {
 	ordered, err := graph.TopologicalSort(gr)
 
 	if err != nil {
-		t.Fatalf("Failed to sort graph, %v", err)
+		t.Fatalf("Failed to sort placetypes graph, %v", err)
 	}
 
 	fmt.Println(ordered)
