@@ -26,9 +26,20 @@ type WOFPlacetype struct {
 	// AltNames []WOFPlacetypeAltNames		`json:"names"`
 }
 
+// String returns the value of the `Name` property for 'pt'.
 func (pt *WOFPlacetype) String() string {
 	return pt.Name
 }
+
+// What follows is legacy code. Specifically this is code that was developed before there was
+// the notion of multiple placetype specifications that would be merged. For example the "core"
+// Who's On First placetype specification and the SFO Museum placetype specification defined in
+// sfomuseum/go-sfomuseum-placetypes and sfomuseum/sfomuseum-placetypes packages. As such there
+// was no need to expose the underlying `WOFPlacetypeSpecification` instance and all methods
+// were assumed to operate on the internal specification instance. Subsequently all the code that
+// used to be defined as standalone methods without reference to any specific placetype specification
+// has been moved in specification.go (and are now methods on individual WOFPlacetypeSpecification
+// instances). These methods have been preserved for backwards compatibility.
 
 var specification *WOFPlacetypeSpecification
 
@@ -43,23 +54,27 @@ func init() {
 	specification = s
 }
 
+// GetPlacetypesByName returns the `WOFPlacetype` instance associated with 'name'.
 func GetPlacetypeByName(name string) (*WOFPlacetype, error) {
 	return specification.GetPlacetypeByName(name)
 }
 
+// GetPlacetypesByName returns the `WOFPlacetype` instance associated with 'id'.
 func GetPlacetypeById(id int64) (*WOFPlacetype, error) {
 	return specification.GetPlacetypeById(id)
 }
 
+// AppendPlacetype appends 'pt' to the catalog of available placetypes.
 func AppendPlacetype(pt WOFPlacetype) error {
 	return specification.AppendPlacetype(pt)
 }
 
+// AppendPlacetypeSpecification appends the placetypes defined in 'other_spec' to the catalog of available placetypes in 'spec'.
 func AppendPlacetypeSpecification(spec *WOFPlacetypeSpecification) error {
 	return specification.AppendPlacetypeSpecification(spec)
 }
 
-// Placetypes returns all the known placetypes for the 'common', 'optional' and 'common_optional' roles.
+// Placetypes returns all the known placetypes which are descendants of "planet" for the 'common', 'optional', 'common_optional', and 'custom' roles.
 func Placetypes() ([]*WOFPlacetype, error) {
 
 	roles := []string{
@@ -72,6 +87,7 @@ func Placetypes() ([]*WOFPlacetype, error) {
 	return PlacetypesForRoles(roles)
 }
 
+// Placetypes returns all the known placetypes which are descendants of "planet" whose role match any of those defined in 'roles'.
 func PlacetypesForRoles(roles []string) ([]*WOFPlacetype, error) {
 	return specification.PlacetypesForRoles(roles)
 }

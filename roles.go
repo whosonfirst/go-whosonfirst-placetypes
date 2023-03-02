@@ -11,3 +11,16 @@ const COMMON_OPTIONAL_ROLE string = "common_optional"
 
 // CUSTOM_ROLE defines the string label for the "custom" placetype role.
 const CUSTOM_ROLE string = "custom"
+
+// AllRoles returns a list of all the known placetype roles.
+func AllRoles() []string {
+
+	roles := []string{
+		COMMON_ROLE,
+		OPTIONAL_ROLE,
+		COMMON_OPTIONAL_ROLE,
+		CUSTOM_ROLE,
+	}
+
+	return roles
+}

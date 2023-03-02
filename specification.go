@@ -79,6 +79,7 @@ func NewWOFPlacetypeSpecificationWithReader(r io.Reader) (*WOFPlacetypeSpecifica
 	return spec, nil
 }
 
+// NewWOFPlacetypeSpecification returns a `WOFPlacetypeSpecification` derived from 'body'.
 func NewWOFPlacetypeSpecification(body []byte) (*WOFPlacetypeSpecification, error) {
 
 	r := bytes.NewReader(body)
@@ -107,13 +108,7 @@ func (spec *WOFPlacetypeSpecification) indexRelationships() {
 
 	spec.relationships = new(sync.Map)
 
-	roles := []string{
-		COMMON_ROLE,
-		OPTIONAL_ROLE,
-		COMMON_OPTIONAL_ROLE,
-		CUSTOM_ROLE,
-	}
-
+	roles := AllRoles()
 	count_roles := len(roles)
 
 	for i := 0; i < count_roles; i++ {
@@ -129,6 +124,15 @@ func (spec *WOFPlacetypeSpecification) indexRelationships() {
 
 }
 
+// Placetypes returns all the known placetypes which are descendants of "planet" for the 'common', 'optional', 'common_optional', and 'custom' roles.
+func (spec *WOFPlacetypeSpecification) Placetypes() ([]*WOFPlacetype, error) {
+
+	roles := AllRoles()
+
+	return spec.PlacetypesForRoles(roles)
+}
+
+// Placetypes returns all the known placetypes which are descendants of "planet" whose role match any of those defined in 'roles'.
 func (spec *WOFPlacetypeSpecification) PlacetypesForRoles(roles []string) ([]*WOFPlacetype, error) {
 
 	pl, err := spec.GetPlacetypeByName("planet")
@@ -143,10 +147,8 @@ func (spec *WOFPlacetypeSpecification) PlacetypesForRoles(roles []string) ([]*WO
 	return pt_list, nil
 }
 
+// GetPlacetypesByName returns the `WOFPlacetype` instance associated with 'name'.
 func (spec *WOFPlacetypeSpecification) GetPlacetypeByName(name string) (*WOFPlacetype, error) {
-
-	// spec.mu.RLock()
-	// defer spec.mu.RUnlock()
 
 	for str_id, pt := range spec.catalog {
 
@@ -168,6 +170,7 @@ func (spec *WOFPlacetypeSpecification) GetPlacetypeByName(name string) (*WOFPlac
 	return nil, fmt.Errorf("Invalid placetype")
 }
 
+// GetPlacetypesByName returns the `WOFPlacetype` instance associated with 'id'.
 func (spec *WOFPlacetypeSpecification) GetPlacetypeById(id int64) (*WOFPlacetype, error) {
 
 	for str_id, pt := range spec.catalog {
@@ -189,6 +192,7 @@ func (spec *WOFPlacetypeSpecification) GetPlacetypeById(id int64) (*WOFPlacetype
 	return nil, fmt.Errorf("Invalid placetype")
 }
 
+// AppendPlacetypeSpecification appends the placetypes defined in 'other_spec' to the catalog of available placetypes in 'spec'.
 func (spec *WOFPlacetypeSpecification) AppendPlacetypeSpecification(other_spec *WOFPlacetypeSpecification) error {
 
 	if spec.isIndexingRelationships() {
@@ -218,6 +222,7 @@ func (spec *WOFPlacetypeSpecification) AppendPlacetypeSpecification(other_spec *
 	return nil
 }
 
+// AppendPlacetype appends 'pt' to the catalog of available placetypes.
 func (spec *WOFPlacetypeSpecification) AppendPlacetype(pt WOFPlacetype) error {
 
 	spec.mu.Lock()
@@ -251,6 +256,7 @@ func (spec *WOFPlacetypeSpecification) AppendPlacetype(pt WOFPlacetype) error {
 	return nil
 }
 
+// Catalog returns the catalog of placetypes contained by 'spec'.
 func (spec *WOFPlacetypeSpecification) Catalog() map[string]WOFPlacetype {
 	return spec.catalog
 }
@@ -292,12 +298,7 @@ func (spec *WOFPlacetypeSpecification) IsValidPlacetypeId(id int64) bool {
 // Returns true is 'b' is an ancestor of 'a'.
 func (spec *WOFPlacetypeSpecification) IsAncestor(a *WOFPlacetype, b *WOFPlacetype) bool {
 
-	roles := []string{
-		COMMON_ROLE,
-		OPTIONAL_ROLE,
-		COMMON_OPTIONAL_ROLE,
-		CUSTOM_ROLE,
-	}
+	roles := AllRoles()
 
 	str_roles := strings.Join(roles, "-")
 	key := fmt.Sprintf("%d_%d_%s_is_ancestor", a.Id, b.Id, str_roles)
@@ -328,12 +329,7 @@ func (spec *WOFPlacetypeSpecification) IsAncestor(a *WOFPlacetype, b *WOFPlacety
 // Returns true is 'b' is a descendant of 'a'.
 func (spec *WOFPlacetypeSpecification) IsDescendant(a *WOFPlacetype, b *WOFPlacetype) bool {
 
-	roles := []string{
-		COMMON_ROLE,
-		OPTIONAL_ROLE,
-		COMMON_OPTIONAL_ROLE,
-		CUSTOM_ROLE,
-	}
+	roles := AllRoles()
 
 	str_roles := strings.Join(roles, "-")
 	key := fmt.Sprintf("%d_%d_%s_is_descendant", a.Id, b.Id, str_roles)
@@ -484,23 +480,33 @@ func (spec *WOFPlacetypeSpecification) GraphPlacetypes() (graph.Graph[string, *W
 	for str_id, pt := range spec.catalog {
 
 		var color string
+		var shape string
 
 		switch pt.Role {
 		case COMMON_ROLE:
 			color = "blue"
+			shape = "box"
 		case COMMON_OPTIONAL_ROLE:
 			color = "green"
+			shape = "box"
 		case OPTIONAL_ROLE:
 			color = "yellow"
+			shape = "box"
 		case CUSTOM_ROLE:
 			color = "orange"
+			shape = "ellipse"
 		default:
 			color = "black"
+			shape = "ellipse"
 		}
 
+		// https://graphviz.org/doc/info/attrs.html
+
 		attrs := []func(*graph.VertexProperties){
-			graph.VertexAttribute("shape", "box"),
+			graph.VertexAttribute("shape", shape),
 			graph.VertexAttribute("color", color),
+			graph.VertexAttribute("decorate", "true"),
+			graph.VertexAttribute("margin", ".2"),
 		}
 
 		err := gr.AddVertex(&pt, attrs...)
@@ -543,6 +549,24 @@ func (spec *WOFPlacetypeSpecification) GraphPlacetypes() (graph.Graph[string, *W
 			if err != nil {
 				return nil, fmt.Errorf("Failed to add edge between %v and %v, %w", p_pt, pt, err)
 			}
+
+			/*
+
+			 TO DO: draw concordances for a given placeptye. This is block on the absence of any
+			 concordance related properties on the WOFPlacetype struct.For example, sfomuseum-placetypes/placetypes/airport.json:
+
+			{
+			    "sfomuseum:role": "custom",
+			    "sfomuseum:name": "airport",
+			    "sfomuseum:label": "Airport",
+			    "sfomuseum:parent": [ "locality", "localadmin" ],
+			    "sfomuseum:concordances": {
+			        "wof:placetype": "campus"
+			    },
+			    "sfomuseum:id": 1175747225
+			}
+
+			*/
 		}
 
 	}
