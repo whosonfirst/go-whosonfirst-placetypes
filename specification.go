@@ -444,24 +444,21 @@ func (spec *WOFPlacetypeSpecification) GraphPlacetypes() (graph.Graph[string, *W
 
 	for str_id, pt := range spec.catalog {
 
-		var color string
-		var shape string
+		color := "black"
+		shape := "box"
 
 		switch pt.Role {
 		case COMMON_ROLE:
 			color = "blue"
-			shape = "box"
 		case COMMON_OPTIONAL_ROLE:
 			color = "green"
-			shape = "box"
 		case OPTIONAL_ROLE:
 			color = "yellow"
-			shape = "box"
 		case CUSTOM_ROLE:
 			color = "orange"
-			shape = "ellipse"
-		default:
-			color = "black"
+		}
+
+		if !isCorePlacetype(pt.Name) {
 			shape = "ellipse"
 		}
 

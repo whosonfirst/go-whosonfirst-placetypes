@@ -2,6 +2,7 @@ package placetypes
 
 import (
 	"log"
+	"sync"
 )
 
 type WOFPlacetypeName struct {
@@ -42,13 +43,26 @@ func (pt *WOFPlacetype) String() string {
 // instances). These methods have been preserved for backwards compatibility.
 
 var specification *WOFPlacetypeSpecification
+var core_placetypes *sync.Map
 
 func init() {
 
 	s, err := DefaultWOFPlacetypeSpecification()
 
 	if err != nil {
-		log.Fatal("Failed to load default WOF specification", err)
+		log.Fatalf("Failed to load default WOF specification, %v", err)
+	}
+
+	all_placetypes, err := s.Placetypes()
+
+	if err != nil {
+		log.Fatalf("Failed to derive placetypes from spec, %v", err)
+	}
+
+	core_placetypes = new(sync.Map)
+
+	for _, pt := range all_placetypes {
+		core_placetypes.Store(pt.Name, pt.Id)
 	}
 
 	specification = s
@@ -135,4 +149,9 @@ func Ancestors(pt *WOFPlacetype) []*WOFPlacetype {
 // AncestorsForRoles returns the ancestors matching any role in 'roles' for 'pt'.
 func AncestorsForRoles(pt *WOFPlacetype, roles []string) []*WOFPlacetype {
 	return specification.AncestorsForRoles(pt, roles)
+}
+
+func isCorePlacetype(n string) bool {
+	_, exists := core_placetypes.Load(n)
+	return exists
 }
