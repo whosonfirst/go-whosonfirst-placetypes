@@ -449,13 +449,13 @@ func (spec *WOFPlacetypeSpecification) GraphPlacetypes() (graph.Graph[string, *W
 
 		switch pt.Role {
 		case COMMON_ROLE:
-			color = "blue"
+			color = COMMON_COLOUR
 		case COMMON_OPTIONAL_ROLE:
-			color = "green"
+			color = COMMON_OPTIONAL_COLOUR
 		case OPTIONAL_ROLE:
-			color = "yellow"
+			color = OPTIONAL_COLOUR
 		case CUSTOM_ROLE:
-			color = "orange"
+			color = CUSTOM_COLOUR
 		}
 
 		if !isCorePlacetype(pt.Name) {
@@ -739,8 +739,12 @@ func (spec *WOFPlacetypeSpecification) indexRelationships() {
 	atomic.AddInt32(&spec.indexing_relationships, 1)
 
 	defer func() {
+
 		atomic.AddInt32(&spec.indexing_relationships, -1)
-		spec.indexing_channel <- true
+
+		go func() {
+			spec.indexing_channel <- true
+		}()
 	}()
 
 	spec.relationships = new(sync.Map)
