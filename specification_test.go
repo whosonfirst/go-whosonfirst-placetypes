@@ -2,7 +2,30 @@ package placetypes
 
 import (
 	"testing"
+
+	"github.com/dominikbraun/graph"
 )
+
+func TestGraphPlacetypes(t *testing.T) {
+
+	spec, err := DefaultWOFPlacetypeSpecification()
+
+	if err != nil {
+		t.Fatalf("Failed to load default WOF placetype specification, %v", err)
+	}
+
+	gr, err := spec.GraphPlacetypes()
+
+	if err != nil {
+		t.Fatalf("Failed to graph placetypes, %v", err)
+	}
+
+	_, err = graph.TopologicalSort(gr)
+
+	if err != nil {
+		t.Fatalf("Failed to sort placetypes graph, %v", err)
+	}
+}
 
 func TestAppendSpecification(t *testing.T) {
 

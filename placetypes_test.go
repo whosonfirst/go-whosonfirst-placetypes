@@ -4,6 +4,36 @@ import (
 	"testing"
 )
 
+func TestIsCorePlacetype(t *testing.T) {
+
+	is_core := []string{
+		"region",
+		"custom",
+		"disputed",
+		"localadmin",
+	}
+
+	not_core := []string{
+		"airport",
+		"gate",
+	}
+
+	for _, n := range is_core {
+
+		if !isCorePlacetype(n) {
+			t.Fatalf("Expected %s to be core placetype", n)
+		}
+	}
+
+	for _, n := range not_core {
+
+		if isCorePlacetype(n) {
+			t.Fatalf("%s not expected to be core placetype", n)
+		}
+	}
+
+}
+
 func TestIsAncestor(t *testing.T) {
 
 	a, err := GetPlacetypeByName("locality")
