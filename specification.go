@@ -458,7 +458,7 @@ func (spec *WOFPlacetypeSpecification) GraphPlacetypes() (graph.Graph[string, *W
 			color = CUSTOM_COLOUR
 		}
 
-		if !isCorePlacetype(pt.Name) {
+		if !pt.IsCorePlacetype() {
 			shape = "ellipse"
 		}
 

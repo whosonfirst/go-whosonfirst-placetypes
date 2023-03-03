@@ -32,6 +32,11 @@ func (pt *WOFPlacetype) String() string {
 	return pt.Name
 }
 
+// IsCorePlacetype returns a boolean value if 'pt' is one of the "core" Who's On First placetypes.
+func (pt *WOFPlacetype) IsCorePlacetype() bool {
+	return isCorePlacetype(pt.Name)
+}
+
 // What follows is legacy code. Specifically this is code that was developed before there was
 // the notion of multiple placetype specifications that would be merged. For example the "core"
 // Who's On First placetype specification and the SFO Museum placetype specification defined in
