@@ -3,7 +3,6 @@ module github.com/whosonfirst/go-whosonfirst-placetypes
 go 1.18
 
 require (
-	github.com/aaronland/go-roster v1.0.0
 	github.com/dominikbraun/graph v0.16.1
 	github.com/goccy/go-graphviz v0.1.0
 	github.com/sfomuseum/go-flags v0.10.0
@@ -13,6 +12,7 @@ require (
 
 require (
 	github.com/aaronland/go-json-query v0.1.3 // indirect
+	github.com/aaronland/go-roster v1.0.0 // indirect
 	github.com/fogleman/gg v1.3.0 // indirect
 	github.com/golang/freetype v0.0.0-20170609003504-e2365dfdc4a0 // indirect
 	github.com/hashicorp/errwrap v0.0.0-20141028054710-7554cd9344ce // indirect
