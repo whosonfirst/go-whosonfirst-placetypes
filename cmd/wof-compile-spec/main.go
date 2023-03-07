@@ -28,7 +28,7 @@ func main() {
 	mu := new(sync.RWMutex)
 	parent_map := new(sync.Map)
 
-	wof_placetypes := make([]*placetypes.WOFPlacetypeDefinition, 0)
+	wof_placetypes := make([]*placetypes.WOFPlacetypeRecord, 0)
 
 	iter_cb := func(ctx context.Context, path string, r io.ReadSeeker, args ...interface{}) error {
 
@@ -36,7 +36,7 @@ func main() {
 			return nil
 		}
 
-		var pt *placetypes.WOFPlacetypeDefinition
+		var pt *placetypes.WOFPlacetypeRecord
 
 		dec := json.NewDecoder(r)
 		err := dec.Decode(&pt)

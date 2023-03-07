@@ -4,8 +4,8 @@ github.com/aaronland/go-roster v1.0.0 h1:FRDGrTqsYySKjWnAhbBGXyeGlI/o5/t9FZYCbUm
 github.com/aaronland/go-roster v1.0.0/go.mod h1:KIsYZgrJlAsyb9LsXSCvlqvbcCBVjCSqcQiZx42i9ro=
 github.com/corona10/goimagehash v1.0.2 h1:pUfB0LnsJASMPGEZLj7tGY251vF+qLGqOgEP4rUs6kA=
 github.com/corona10/goimagehash v1.0.2/go.mod h1:/l9umBhvcHQXVtQO1V6Gp1yD20STawkhRnnX0D1bvVI=
-github.com/dominikbraun/graph v0.16.0 h1:M8B6g/uVYHQ2TG+AdbRtyXg7/ASHZCihzzkttFUHidA=
-github.com/dominikbraun/graph v0.16.0/go.mod h1:yOjYyogZLY1LSG9E33JWZJiq5k83Qy2C6POAuiViluc=
+github.com/dominikbraun/graph v0.16.1 h1:ZtzDQFo32vxwSUsK4ioX8bfE45xoh8hQfavFMlKpaC8=
+github.com/dominikbraun/graph v0.16.1/go.mod h1:yOjYyogZLY1LSG9E33JWZJiq5k83Qy2C6POAuiViluc=
 github.com/fogleman/gg v1.3.0 h1:/7zJX8F6AaYQc57WQCyN9cAIz+4bCJGO9B+dyW29am8=
 github.com/fogleman/gg v1.3.0/go.mod h1:R/bRT+9gY/C5z7JzPU0zXsXHKM4/ayA+zqcVNZzPa1k=
 github.com/goccy/go-graphviz v0.1.0 h1:6OqQoQ5PeAiHYe/YcusyeulqBrOkUb16HQ4ctRdyVUU=

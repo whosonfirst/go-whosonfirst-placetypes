@@ -5,13 +5,21 @@ import (
 	"fmt"
 )
 
-type WhosOnFirstFoo struct {
-	Foo
+const WHOSONFIRST_DEFINITION_SCHEME string = "whosonfirst"
+
+type WhosOnFirstDefinition struct {
+	Definition
 	spec *WOFPlacetypeSpecification
 	prop string
+	uri string
 }
 
-func NewWhosOnFirstFoo(ctx context.Context, uri string) (Foo, error) {
+func init(){
+	ctx := context.Background()
+	RegisterDefinition(ctx, "whosonfirst", NewWhosOnFirstDefinition)
+}
+
+func NewWhosOnFirstDefinition(ctx context.Context, uri string) (Definition, error) {
 
 	spec, err := DefaultWOFPlacetypeSpecification()
 
@@ -19,18 +27,24 @@ func NewWhosOnFirstFoo(ctx context.Context, uri string) (Foo, error) {
 		return nil, fmt.Errorf("Failed to create default WOF placetype specification, %w", err)
 	}
 
-	s := &WhosOnFirstFoo{
+	s := &WhosOnFirstDefinition{
 		spec: spec,
 		prop: "wof:placetype",
+		uri: uri,
 	}
 
 	return s, nil
 }
 
-func (s *WhosOnFirstFoo) Specification() *WOFPlacetypeSpecification {
+func (s *WhosOnFirstDefinition) Specification() *WOFPlacetypeSpecification {
 	return s.spec
 }
 
-func (s *WhosOnFirstFoo) Property() string {
+func (s *WhosOnFirstDefinition) Property() string {
 	return s.prop
 }
+
+func (s *WhosOnFirstDefinition) URI() string {
+	return s.uri
+}
+		
