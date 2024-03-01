@@ -25,4 +25,3 @@ func TestWhosOnFirstDefinition(t *testing.T) {
 		t.Fatalf("Unexpected URI, %s", d.URI())
 	}
 }
-		
