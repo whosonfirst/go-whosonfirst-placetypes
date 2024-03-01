@@ -21,18 +21,18 @@ func TestIsValidPlacetype(t *testing.T) {
 
 	for _, n := range is_valid {
 
-		if !IsValidPlacetype(n){
+		if !IsValidPlacetype(n) {
 			t.Fatalf("Expected '%s' to be valid placetype", n)
 		}
 	}
 
 	for _, n := range not_valid {
 
-		if IsValidPlacetype(n){
+		if IsValidPlacetype(n) {
 			t.Fatalf("Did no expect '%s' to be valid placetype", n)
 		}
 	}
-	
+
 }
 
 func TestIsCorePlacetype(t *testing.T) {
@@ -41,13 +41,13 @@ func TestIsCorePlacetype(t *testing.T) {
 		"region",
 		"disputed",
 		"localadmin",
+		"postalregion",
+		"custom",
 	}
 
 	not_core := []string{
 		"airport",
 		"gate",
-		"postalregion",
-		"custom",		
 	}
 
 	for _, n := range is_core {
