@@ -7,7 +7,7 @@ import (
 	"fmt"
 	"io"
 	_ "log"
-	"log/slog"
+	_ "log/slog"
 	"strconv"
 	"strings"
 	"sync"
@@ -239,7 +239,6 @@ func (spec *WOFPlacetypeSpecification) IsValidPlacetype(name string) bool {
 
 	for _, pt := range spec.catalog {
 
-		slog.Info("WTF", pt.Name, name)
 		if pt.Name == name {
 			return true
 		}
