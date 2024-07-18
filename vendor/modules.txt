@@ -114,8 +114,8 @@ github.com/whosonfirst/walk
 # github.com/whosonfirst/warning v0.1.1
 ## explicit; go 1.12
 github.com/whosonfirst/warning
-# golang.org/x/image v0.0.0-20200119044424-58c23975cae1
-## explicit; go 1.12
+# golang.org/x/image v0.18.0
+## explicit; go 1.18
 golang.org/x/image/draw
 golang.org/x/image/font
 golang.org/x/image/font/basicfont
