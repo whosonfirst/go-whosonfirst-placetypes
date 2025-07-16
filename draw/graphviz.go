@@ -3,6 +3,7 @@ package draw
 import (
 	"bufio"
 	"bytes"
+	"context"
 	"fmt"
 	"image"
 	"image/jpeg"
@@ -99,23 +100,29 @@ func DrawPlacetypesGraph(spec *placetypes.WOFPlacetypeSpecification) (image.Imag
 	err := spec.PlacetypesToGraphviz(buf_wr)
 
 	if err != nil {
-		return nil, fmt.Errorf("Failed to generate graphviz, %v", err)
+		return nil, fmt.Errorf("Failed to generate graphviz, %w", err)
 	}
 
 	buf_wr.Flush()
 
-	gv := graphviz.New()
+	ctx := context.Background()
+	
+	gv, err := graphviz.New(ctx)
+
+	if err != nil {
+		return nil, fmt.Errorf("Failed to create graphviz, %w", err)
+	}
 
 	graph, err := graphviz.ParseBytes(buf.Bytes())
 
 	if err != nil {
-		return nil, fmt.Errorf("Failed to parse graphviz data, %v", err)
+		return nil, fmt.Errorf("Failed to parse graphviz data, %w", err)
 	}
 
-	im, err := gv.RenderImage(graph)
+	im, err := gv.RenderImage(ctx, graph)
 
 	if err != nil {
-		return nil, fmt.Errorf("Failed to render graphviz data, %v", err)
+		return nil, fmt.Errorf("Failed to render graphviz data, %w", err)
 	}
 
 	return im, nil
