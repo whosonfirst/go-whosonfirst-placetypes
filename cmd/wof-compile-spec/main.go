@@ -4,15 +4,13 @@ import (
 	"context"
 	"encoding/json"
 	"flag"
-	"fmt"
-	"io"
 	"log"
 	"os"
 	"path/filepath"
 	"strconv"
 	"sync"
 
-	"github.com/whosonfirst/go-whosonfirst-iterate/v2/iterator"
+	"github.com/whosonfirst/go-whosonfirst-iterate/v3"
 	"github.com/whosonfirst/go-whosonfirst-placetypes"
 )
 
@@ -30,19 +28,31 @@ func main() {
 
 	wof_placetypes := make([]*placetypes.WOFPlacetypeRecord, 0)
 
-	iter_cb := func(ctx context.Context, path string, r io.ReadSeeker, args ...interface{}) error {
+	iter, err := iterate.NewIterator(ctx, *iterator_uri)
 
-		if filepath.Ext(path) != ".json" {
-			return nil
+	if err != nil {
+		log.Fatalf("Failed to create iterator, %v", err)
+	}
+	
+	for rec, err := range iter.Iterate(ctx, *iterator_source) {
+
+		if err != nil {
+			log.Fatalf("Iterator yielded error, %v", err)
+		}
+
+		defer rec.Body.Close()
+
+		if filepath.Ext(rec.Path) != ".json" {
+			continue
 		}
 
 		var pt *placetypes.WOFPlacetypeRecord
 
-		dec := json.NewDecoder(r)
+		dec := json.NewDecoder(rec.Body)
 		err := dec.Decode(&pt)
 
 		if err != nil {
-			return fmt.Errorf("Failed to decode %s, %w", path, err)
+			log.Fatalf("Failed to decode %s, %v", rec.Path, err)
 		}
 
 		parent_map.Store(pt.Name, pt.Id)
@@ -51,19 +61,6 @@ func main() {
 		defer mu.Unlock()
 
 		wof_placetypes = append(wof_placetypes, pt)
-		return nil
-	}
-
-	iter, err := iterator.NewIterator(ctx, *iterator_uri, iter_cb)
-
-	if err != nil {
-		log.Fatalf("Failed to create iterator, %v", err)
-	}
-
-	err = iter.IterateURIs(ctx, *iterator_source)
-
-	if err != nil {
-		log.Fatalf("Failed to iterate URIs, %v", err)
 	}
 
 	// START OF... not sure...

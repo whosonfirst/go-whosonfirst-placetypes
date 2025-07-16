@@ -698,6 +698,10 @@ func (n *Node) SetFillColor(v string) *Node {
 	return n
 }
 
+func (n *Node) FixedSize() bool {
+	return n.GetStr(string(fixedSizeAttr)) == toBoolString(true)
+}
+
 // SetFixedSize
 // If false, the size of a node is determined by smallest width and height needed to contain its label and image,
 // if any, with a margin specified by the margin attribute.
@@ -737,6 +741,30 @@ func (n *Node) SetFontColor(v string) *Node {
 // https://graphviz.gitlab.io/_pages/doc/info/attrs.html#a:fontcolor
 func (e *Edge) SetFontColor(v string) *Edge {
 	e.SafeSet(string(fontColorAttr), v, "black")
+	return e
+}
+
+// SetFontName
+// Font used for text.
+// https://graphviz.gitlab.io/_pages/doc/info/attrs.html#a:fontname
+func (g *Graph) SetFontName(v string) *Graph {
+	g.SafeSet(string(fontNameAttr), v, "Times-Roman")
+	return g
+}
+
+// SetFontName
+// Font used for text.
+// https://graphviz.gitlab.io/_pages/doc/info/attrs.html#a:fontname
+func (n *Node) SetFontName(v string) *Node {
+	n.SafeSet(string(fontNameAttr), v, "Times-Roman")
+	return n
+}
+
+// SetFontName
+// Font used for text.
+// https://graphviz.gitlab.io/_pages/doc/info/attrs.html#a:fontname
+func (e *Edge) SetFontName(v string) *Edge {
+	e.SafeSet(string(fontNameAttr), v, "Times-Roman")
 	return e
 }
 
@@ -1021,14 +1049,32 @@ func (n *Node) SetImagePos(v ImagePos) *Node {
 	return n
 }
 
+type ImageScale string
+
+const (
+	ImageScaleDefault ImageScale = "false"
+	ImageScaleTrue    ImageScale = "true"
+	ImageScaleWidth   ImageScale = "width"
+	ImageScaleHeight  ImageScale = "height"
+	ImageScaleBoth    ImageScale = "both"
+)
+
+func (n *Node) ImageScale() ImageScale {
+	v := n.GetStr(string(imageScaleAttr))
+	if v == "" {
+		return ImageScaleDefault
+	}
+	return ImageScale(v)
+}
+
 // SetImageScale
 // Attribute controlling how an image fills its containing node. In general, the image is given its natural size, (cf. dpi), and the node size is made large enough to contain its image, its label, its margin, and its peripheries. Its width and height will also be at least as large as its minimum width and height. If, however, fixedsize=true, the width and height attributes specify the exact size of the node.
 // During rendering, in the default case (imagescale=false), the image retains its natural size. If imagescale=true, the image is uniformly scaled (i.e., its aspect ratio is preserved) to fit inside the node. At least one dimension of the image will be as large as possible given the size of the node. When imagescale=width, the width of the image is scaled to fill the node width. The corresponding property holds when imagescale=height. When imagescale=both, both the height and the width are scaled separately to fill the node.
 //
 // In all cases, if a dimension of the image is larger than the corresponding dimension of the node, that dimension of the image is scaled down to fit the node. As with the case of expansion, if imagescale=true, width and height are scaled uniformly.
 // https://graphviz.gitlab.io/_pages/doc/info/attrs.html#a:imagescale
-func (n *Node) SetImageScale(v bool) *Node {
-	n.SafeSet(string(imageScaleAttr), toBoolString(v), falseStr)
+func (n *Node) SetImageScale(v ImageScale) *Node {
+	n.SafeSet(string(imageScaleAttr), string(v), string(ImageScaleDefault))
 	return n
 }
 
@@ -1047,6 +1093,11 @@ func (g *Graph) SetInputScale(v float64) *Graph {
 	return g
 }
 
+// Label returns label attribute.
+func (g *Graph) Label() string {
+	return g.GetStr(string(labelAttr))
+}
+
 // SetLabel
 // Text label attached to objects.
 // If a node's shape is record, then the label can have a special format which describes the record layout.
@@ -1056,8 +1107,13 @@ func (g *Graph) SetInputScale(v float64) *Graph {
 // To get an HTML-like label, the label attribute value itself must be an HTML string.
 // https://graphviz.gitlab.io/_pages/doc/info/attrs.html#a:label
 func (g *Graph) SetLabel(v string) *Graph {
-	g.SafeSet(string(labelAttr), v, "")
+	g.SafeSet(string(labelAttr), v, "\\G")
 	return g
+}
+
+// Label returns label attribute.
+func (n *Node) Label() string {
+	return n.GetStr(string(labelAttr))
 }
 
 // SetLabel
@@ -1073,6 +1129,11 @@ func (n *Node) SetLabel(v string) *Node {
 	return n
 }
 
+// Label returns label attribute.
+func (e *Edge) Label() string {
+	return e.GetStr(string(labelAttr))
+}
+
 // SetLabel
 // Text label attached to objects.
 // If a node's shape is record, then the label can have a special format which describes the record layout.
@@ -1082,7 +1143,7 @@ func (n *Node) SetLabel(v string) *Node {
 // To get an HTML-like label, the label attribute value itself must be an HTML string.
 // https://graphviz.gitlab.io/_pages/doc/info/attrs.html#a:label
 func (e *Edge) SetLabel(v string) *Edge {
-	e.SafeSet(string(labelAttr), v, "")
+	e.SafeSet(string(labelAttr), v, "\\E")
 	return e
 }
 
@@ -2499,7 +2560,7 @@ const (
 	DiagonalsNodeStyle NodeStyle = "diagonals"
 	FilledNodeStyle    NodeStyle = "filled"
 	StripedNodeStyle   NodeStyle = "striped"
-	WedgesNodeStyle    NodeStyle = "wedged"
+	WedgedNodeStyle    NodeStyle = "wedged"
 )
 
 type EdgeStyle string
