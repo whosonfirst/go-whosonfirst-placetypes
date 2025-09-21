@@ -106,7 +106,7 @@ func DrawPlacetypesGraph(spec *placetypes.WOFPlacetypeSpecification) (image.Imag
 	buf_wr.Flush()
 
 	ctx := context.Background()
-	
+
 	gv, err := graphviz.New(ctx)
 
 	if err != nil {
