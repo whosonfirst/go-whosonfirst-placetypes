@@ -33,7 +33,7 @@ func main() {
 	if err != nil {
 		log.Fatalf("Failed to create iterator, %v", err)
 	}
-	
+
 	for rec, err := range iter.Iterate(ctx, *iterator_source) {
 
 		if err != nil {
